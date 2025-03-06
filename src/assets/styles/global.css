@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Bomstad", sans-serif;
+}
+
+.button-primary {
+  @apply bg-primary text-black font-bold py-2 px-4 rounded;
+}
+
+@font-face {
+  font-family: "Bomstad";
+  src:
+    url("./fonts/BomstadDisplay-Regular.woff2") format("woff2"),
+    url("./fonts/BomstadDisplay-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bomstad";
+  src:
+    url("./fonts/BomstadDisplay-Bold.woff2") format("woff2"),
+    url("./fonts/BomstadDisplay-Bold.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
