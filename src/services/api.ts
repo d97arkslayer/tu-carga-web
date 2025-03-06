@@ -58,6 +58,29 @@ export const authAPI = {
       );
     }
   },
+  forgotPassword: async (email: string) => {
+    try {
+      const response = await apiClient.post("/password/forgot-password", {
+        email,
+      });
+      return response.data;
+    } catch (error: any) {
+      throw (
+        error.response?.data || { message: "Error requesting password reset" }
+      );
+    }
+  },
+  resetPassword: async (token: string, newPassword: string) => {
+    try {
+      const response = await apiClient.post("/password/reset-password", {
+        token,
+        newPassword,
+      });
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || { message: "Error resetting password" };
+    }
+  },
 };
 
 // Example function to fetch data
