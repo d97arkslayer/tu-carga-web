@@ -32,7 +32,10 @@ const HomePage: React.FC = () => {
               Iniciar sesión
             </button>
 
-            <button className="w-full bg-black border border-black hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-3xl">
+            <button
+              onClick={() => navigate("/signup")}
+              className="w-full bg-black border border-black hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-3xl"
+            >
               Crear cuenta
             </button>
           </div>

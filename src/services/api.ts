@@ -17,6 +17,47 @@ export const authAPI = {
       throw error.response?.data || { message: "Error connecting to server" };
     }
   },
+  signup: async (userData: {
+    name: string;
+    lastName: string;
+    phone: string;
+    email: string;
+    password: string;
+  }) => {
+    try {
+      const response = await apiClient.post("/users", userData);
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || { message: "Error connecting to server" };
+    }
+  },
+  sendVerificationCode: async (email: string) => {
+    try {
+      const response = await apiClient.post("/verification/send-code", {
+        email,
+      });
+      return response.data;
+    } catch (error: any) {
+      throw (
+        error.response?.data || { message: "Error sending verification code" }
+      );
+    }
+  },
+  verifyCode: async (email: string, code: string) => {
+    try {
+      const response = await apiClient.post("/verification/verify", {
+        email,
+        code,
+      });
+      return response.data;
+    } catch (error: any) {
+      throw (
+        error.response?.data || {
+          message: "Error when trying to verify the email",
+        }
+      );
+    }
+  },
 };
 
 // Example function to fetch data
