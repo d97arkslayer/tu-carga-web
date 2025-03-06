@@ -66,3 +66,5 @@ coverage/
 # MacOS Finder attributes
 .AppleDouble
 .LSOverride
+
+.idea
