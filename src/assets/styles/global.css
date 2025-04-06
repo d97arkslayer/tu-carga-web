@@ -29,3 +29,26 @@ body {
   font-style: normal;
   font-display: swap;
 }
+
+@media (max-width: 768px) {
+  .flex {
+    flex-direction: column;
+  }
+
+  .px-8 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .max-w-lg {
+    max-width: 100%;
+  }
+
+  .relative img {
+    width: 100%;
+  }
+}

@@ -9,6 +9,7 @@ import EmailVerifiedPage from "./pages/EmailVerifiedPage";
 import RecoverPasswordPage from "./pages/ResetPasswordRequestPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import PasswordResetedPage from "./pages/PasswordResetedPage";
+import DashboardPage from "./pages/DashboardPage";
 
 const App: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const App: React.FC = () => {
             path="/verification-email"
             element={<VerificationCodeEmailPage />}
           />
+          <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>
       </Layout>
     </Router>
