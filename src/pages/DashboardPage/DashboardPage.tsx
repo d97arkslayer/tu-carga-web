@@ -4,8 +4,18 @@ import HeroSlider from "../../components/dashboard/HeroSlider";
 import Dashboard from "../../components/dashboard/Dashboard/Dashboard";
 import { COLORS } from "../../utils/constants";
 import gruaImage from "../../assets/images/grua_home.png";
+import { useUserContext } from "../../context/UserContext";
 
 const DashboardPage: React.FC = () => {
+  const { user, isLoading, error } = useUserContext();
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="loader">Cargando...</div>
+      </div>
+    );
+  }
   const slides = [
     {
       title: "Solicita tu grua\n" + "o transporte de\n" + "carga 24/7",

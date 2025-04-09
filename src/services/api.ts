@@ -83,6 +83,27 @@ export const authAPI = {
   },
 };
 
+export const userAPI = {
+  getLoggedInUser: async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+
+      const response = await apiClient.get("/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || { message: "Error fetching user data" };
+    }
+  },
+};
+
 // Example function to fetch data
 export const fetchData = async (endpoint: string) => {
   try {

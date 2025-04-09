@@ -8,14 +8,16 @@ import LicenceIcon from "../../../assets/icons/licence.png";
 import RoadKit from "../../../assets/icons/road_kit.png";
 import Tecno from "../../../assets/icons/tecno.png";
 import SOATDetailModal from "../SOATDetailModal";
+import { useUserContext } from "../../../context/UserContext";
 
 const Dashboard: React.FC = () => {
   const [showSOATModal, setShowSOATModal] = useState(false);
+  const { user } = useUserContext();
   return (
     <section className="bg-white rounded-[25px] shadow-lg p-8 mx-8 my-12">
-      <h2 className="text-2xl font-bold mb-2">Hola, Esteban</h2>
+      <h2 className="text-2xl font-bold mb-2">Hola, {`${user?.name}`}</h2>
       <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold mb-4">
-        JNN813
+        {user?.vehicles?.[0]?.plate}
       </span>
       <p className="mb-6">
         Selecciona una de las categorías para gestionar un recordatorio

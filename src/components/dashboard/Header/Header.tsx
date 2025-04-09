@@ -4,10 +4,12 @@ import { COLORS } from "../../../utils/constants";
 import { FaUserCircle } from "react-icons/fa";
 import ProfileModal from "../ProfileModal/ProfileModal";
 import { useNavigate } from "react-router-dom";
+import { useUserContext } from "../../../context/UserContext";
 
 const Header: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const { user } = useUserContext();
 
   const toggleModal = () => {
     setShowModal(!showModal);
@@ -50,7 +52,7 @@ const Header: React.FC = () => {
           className="flex items-center space-x-2 cursor-pointer"
           onClick={toggleModal}
         >
-          <span className="text-white font-semibold">Esteban Herrera</span>
+          <span className="text-white font-semibold">{`${user?.name} ${user?.lastName}`}</span>
           {/* @ts-ignore */}
           <FaUserCircle color={COLORS.primary} size={32} />
         </div>
@@ -58,7 +60,7 @@ const Header: React.FC = () => {
 
       {showModal && (
         <ProfileModal
-          username="Esteban Herrera"
+          username={`${user?.name} ${user?.lastName}`}
           onClose={() => setShowModal(false)}
           onMenuItemClick={handleMenuItemClick}
         />
