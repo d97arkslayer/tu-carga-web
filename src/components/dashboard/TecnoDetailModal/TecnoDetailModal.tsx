@@ -1,24 +1,23 @@
-// src/components/dashboard/SOATDetailModal/SOATDetailModal.tsx
 import React, { useState } from "react";
 import { COLORS } from "../../../utils/constants";
 import { FaTimes } from "react-icons/fa";
-import SoatIcon from "../../../assets/icons/soat.png";
+import TecnoIcon from "../../../assets/icons/tecno.png";
 
-interface SOATDetailModalProps {
+interface TecnoDetailModalProps {
   onClose: () => void;
   status: string;
   expirationDate: string;
   issueDate: string;
-  policyNumber: string;
+  revisionNumber: string;
   licensePlate: string;
 }
 
-const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
+const TecnoDetailModal: React.FC<TecnoDetailModalProps> = ({
   onClose,
   status,
   expirationDate,
   issueDate,
-  policyNumber,
+  revisionNumber,
   licensePlate,
 }) => {
   const [reminders, setReminders] = useState({
@@ -42,17 +41,10 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
   };
 
   const handleQuoteClick = (licensePlate: string) => {
-    // Get the license plate from Dashboard (currently hardcoded as "JNN813")
-
-    // Format the WhatsApp message and encode it for URL
     const message = encodeURIComponent(
-      `Hola quiero contizar el SOAT para el vehiculo de placa: ${licensePlate}`,
+      `Hola quiero contizar la revisión para el vehiculo de placa: ${licensePlate}`,
     );
-
-    // Create WhatsApp URL (57 is Colombia country code)
     const whatsappUrl = `https://wa.me/573151957777?text=${message}`;
-
-    // Open WhatsApp in a new tab
     window.open(whatsappUrl, "_blank");
   };
 
@@ -63,7 +55,6 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
     }));
   };
 
-  // Helper function to format dates to "dd month yyyy" in Spanish
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     const day = date.getDate().toString().padStart(2, "0");
@@ -96,7 +87,7 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
           className="bg-white rounded-[20px] shadow-lg w-full max-w-2xl min-w-[500px] overflow-hidden border border-blue-100 transform transition-all duration-300"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header Section */}
+          {/* Header */}
           <div className="px-10 py-6 flex justify-between items-center border-gray-200">
             <div className="flex items-center mt-3">
               <div
@@ -104,7 +95,7 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
                 style={{ backgroundColor: "#C4F439" }}
               >
                 {/* @ts-ignore */}
-                <img src={SoatIcon} height={24} width={24} />
+                <img src={TecnoIcon} height={24} width={24} />
               </div>
               <h3 className="font-bold text-xl">Información no disponible</h3>
             </div>
@@ -133,7 +124,6 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
     );
   }
 
-  // @ts-ignore
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
@@ -148,7 +138,7 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header Section */}
+        {/* Header */}
         <div className="px-10 py-6 flex justify-between items-center border-gray-200">
           <div className="flex items-center mt-3">
             <div
@@ -156,9 +146,9 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
               style={{ backgroundColor: "#C4F439" }}
             >
               {/* @ts-ignore */}
-              <img src={SoatIcon} height={24} width={24} />
+              <img src={TecnoIcon} height={24} width={24} />
             </div>
-            <h3 className="font-bold text-xl">Seguro SOAT</h3>
+            <h3 className="font-bold text-xl">Revisión Técnico Mecánica</h3>
           </div>
           <button
             onClick={onClose}
@@ -170,10 +160,10 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
         </div>
 
         <div className="px-10 py-6 border-gray-200">
-          {/* Horizontal layout for the first three items */}
+          {/* Horizontal layout */}
           <div className="flex justify-between mb-4 mx-8">
             <div className="flex flex-col items-center">
-              <span className="text-gray-700 mb-2">Estado SOAT</span>
+              <span className="text-gray-700 mb-2">Estado Tecnomec.</span>
               <span
                 className="font-bold px-3 py-1 rounded-full text-black text-sm"
                 style={{ backgroundColor: statusColors[status] }}
@@ -193,24 +183,22 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Divider */}
           <hr className="my-4 border-gray-200 mx-8" />
 
-          {/* Policy number below */}
+          {/* Revision panel */}
           <div className="flex flex-col items-start mx-8">
-            <span className="text-gray-700 mb-2">Nº Póliza SOAT</span>
+            <span className="text-gray-700 mb-2">Nº Revisión</span>
             <span className="font-bold px-3 py-1 rounded-full bg-gray-200 text-sm">
-              {policyNumber}
+              {revisionNumber}
             </span>
           </div>
         </div>
 
         <hr className="my-4 border-gray-200 mx-16" />
 
-        {/* Reminder Activation Section */}
+        {/* Reminder Activation */}
         <div className="px-10 py-6 border-gray-200">
           <h4 className="font-bold mb-4 mx-8">Activar recordatorio</h4>
-
           <div className="space-y-4 mx-8">
             <div className="flex justify-between items-center">
               <span className="text-gray-700">1 día antes de vencer</span>
@@ -223,7 +211,6 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
                 />
               </button>
             </div>
-
             <div className="flex justify-between items-center">
               <span className="text-gray-700">1 semana antes de vencer</span>
               <button
@@ -235,7 +222,6 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
                 />
               </button>
             </div>
-
             <div className="flex justify-between items-center">
               <span className="text-gray-700">1 mes antes de vencer</span>
               <button
@@ -249,7 +235,9 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
             </div>
           </div>
         </div>
+
         <hr className="my-4 border-gray-200 mx-16" />
+
         {/* Action Button */}
         <div className="px-10 py-6">
           <div className="mx-8">
@@ -258,7 +246,7 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
               className="py-3 px-6 rounded-full font-bold transition duration-300 hover:opacity-90 hover:scale-105"
               style={{ backgroundColor: "#C4F439", color: COLORS.black }}
             >
-              Cotizar SOAT
+              Cotízar revisión
             </button>
           </div>
         </div>
@@ -267,5 +255,4 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
   );
 };
 
-export default SOATDetailModal;
-
+export default TecnoDetailModal;

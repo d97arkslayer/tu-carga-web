@@ -1,24 +1,18 @@
-// src/components/dashboard/SOATDetailModal/SOATDetailModal.tsx
-import React, { useState } from "react";
-import { COLORS } from "../../../utils/constants";
+import React, { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
-import SoatIcon from "../../../assets/icons/soat.png";
+import InsuranceIcon from "../../../assets/icons/insurance.png";
 
-interface SOATDetailModalProps {
+interface InsuranceDetailsModalProps {
   onClose: () => void;
   status: string;
-  expirationDate: string;
-  issueDate: string;
-  policyNumber: string;
+  issuanceDate: string;
   licensePlate: string;
 }
 
-const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
+const InsuranceDetailsModal: React.FC<InsuranceDetailsModalProps> = ({
   onClose,
   status,
-  expirationDate,
-  issueDate,
-  policyNumber,
+  issuanceDate,
   licensePlate,
 }) => {
   const [reminders, setReminders] = useState({
@@ -26,13 +20,19 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
     oneWeek: false,
     oneMonth: false,
   });
+  const [isVisible, setIsVisible] = useState(false);
 
-  // New: status colors mapping (consistent with Card)
-  const statusColors: Record<string, string> = {
-    Vigente: COLORS.green,
-    "Prox. vencer": COLORS.orange,
-    "Sin informacion": COLORS.red,
-    Vencido: COLORS.red,
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  const toggleReminder = (key: keyof typeof reminders) => {
+    setReminders((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(() => onClose(), 300);
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -42,45 +42,31 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
   };
 
   const handleQuoteClick = (licensePlate: string) => {
-    // Get the license plate from Dashboard (currently hardcoded as "JNN813")
-
-    // Format the WhatsApp message and encode it for URL
     const message = encodeURIComponent(
-      `Hola quiero contizar el SOAT para el vehiculo de placa: ${licensePlate}`,
+      `Hola quiero contizar la póliza para el vehiculo de placa: ${licensePlate}`,
     );
-
-    // Create WhatsApp URL (57 is Colombia country code)
     const whatsappUrl = `https://wa.me/573151957777?text=${message}`;
-
-    // Open WhatsApp in a new tab
     window.open(whatsappUrl, "_blank");
   };
 
-  const toggleReminder = (key: keyof typeof reminders) => {
-    setReminders((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
-
-  // Helper function to format dates to "dd month yyyy" in Spanish
-  const formatDate = (dateStr: string) => {
+  const formatIssuanceDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    const day = date.getDate().toString().padStart(2, "0");
+    if (isNaN(date.getTime())) return dateStr;
     const months = [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre",
+      "enero",
+      "febrero",
+      "marzo",
+      "abril",
+      "mayo",
+      "junio",
+      "julio",
+      "agosto",
+      "septiembre",
+      "octubre",
+      "noviembre",
+      "diciembre",
     ];
+    const day = date.getDate().toString().padStart(2, "0");
     const month = months[date.getMonth()];
     const year = date.getFullYear();
     return `${day} ${month} ${year}`;
@@ -103,8 +89,12 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
                 className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
                 style={{ backgroundColor: "#C4F439" }}
               >
-                {/* @ts-ignore */}
-                <img src={SoatIcon} height={24} width={24} />
+                <img
+                  src={InsuranceIcon}
+                  height={24}
+                  width={24}
+                  alt="Insurance Icon"
+                />
               </div>
               <h3 className="font-bold text-xl">Información no disponible</h3>
             </div>
@@ -112,7 +102,7 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
               onClick={onClose}
               className="bg-gray-100 p-2 rounded-full text-black hover:bg-gray-200 transition-colors"
             >
-              {/* @ts-ignore */}
+              {/*@ts-ignore*/}
               <FaTimes size={24} />
             </button>
           </div>
@@ -123,7 +113,7 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
             </p>
             <button
               className="py-3 px-6 rounded-full font-bold transition duration-300 hover:opacity-90 hover:scale-105"
-              style={{ backgroundColor: "#C4F439", color: COLORS.black }}
+              style={{ backgroundColor: "#C4F439", color: "#000" }}
             >
               Agregar información
             </button>
@@ -133,87 +123,58 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
     );
   }
 
-  // @ts-ignore
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={handleBackdropClick}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
+      onClick={handleClose}
     >
       <div
-        className="bg-white rounded-[20px] shadow-lg w-full max-w-2xl min-w-[500px] overflow-hidden border border-blue-100 transform transition-all duration-300"
-        style={{
-          animation: "0.3s ease-out 0s 1 normal forwards running fadeIn",
-          maxHeight: "90vh",
-          overflow: "auto",
-        }}
+        className={`bg-white rounded-[20px] shadow-lg w-full max-w-2xl min-w-[500px] overflow-hidden border border-blue-100 p-6 transition-transform duration-300 transform ${isVisible ? "scale-100" : "scale-95"}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Section */}
         <div className="px-10 py-6 flex justify-between items-center border-gray-200">
-          <div className="flex items-center mt-3">
+          <div className="flex items-center mt-2">
             <div
               className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
               style={{ backgroundColor: "#C4F439" }}
             >
-              {/* @ts-ignore */}
-              <img src={SoatIcon} height={24} width={24} />
+              <img
+                src={InsuranceIcon}
+                height={24}
+                width={24}
+                alt="Insurance Icon"
+              />
             </div>
-            <h3 className="font-bold text-xl">Seguro SOAT</h3>
+            <h3 className="font-bold text-xl text-black">Póliza de seguro</h3>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="bg-gray-100 p-2 rounded-full text-black hover:bg-gray-200 transition-colors"
           >
-            {/* @ts-ignore */}
+            {/*@ts-ignore*/}
             <FaTimes size={24} />
           </button>
         </div>
-
-        <div className="px-10 py-6 border-gray-200">
-          {/* Horizontal layout for the first three items */}
-          <div className="flex justify-between mb-4 mx-8">
-            <div className="flex flex-col items-center">
-              <span className="text-gray-700 mb-2">Estado SOAT</span>
-              <span
-                className="font-bold px-3 py-1 rounded-full text-black text-sm"
-                style={{ backgroundColor: statusColors[status] }}
-              >
-                {status}
-              </span>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <span className="text-gray-700 mb-2">Vencimiento</span>
-              <span className="font-bold">{formatDate(expirationDate)}</span>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <span className="text-gray-700 mb-2">Expedición</span>
-              <span className="font-bold">{formatDate(issueDate)}</span>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <hr className="my-4 border-gray-200 mx-8" />
-
-          {/* Policy number below */}
-          <div className="flex flex-col items-start mx-8">
-            <span className="text-gray-700 mb-2">Nº Póliza SOAT</span>
-            <span className="font-bold px-3 py-1 rounded-full bg-gray-200 text-sm">
-              {policyNumber}
+        {/* Issuance Date Section */}
+        <div className="mb-8 mt-6 mb-4 mx-8">
+          <p className="text-black font-medium mb-2">Fecha expedición Póliza</p>
+          <div className="relative w-3/5">
+            <span className="w-full rounded-full border border-gray-300 py-2 pl-3 pr-10 block">
+              {formatIssuanceDate(issuanceDate)}
             </span>
           </div>
         </div>
-
-        <hr className="my-4 border-gray-200 mx-16" />
-
+        {/* Divider */}
+        <div className="flex justify-center my-4">
+          <hr className="w-[90%] border-gray-200" />
+        </div>
         {/* Reminder Activation Section */}
-        <div className="px-10 py-6 border-gray-200">
-          <h4 className="font-bold mb-4 mx-8">Activar recordatorio</h4>
-
-          <div className="space-y-4 mx-8">
+        <div className="mb-6 mb-4 mx-8">
+          <h4 className="font-bold text-black mb-4">Activar recordatorio</h4>
+          <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-gray-700">1 día antes de vencer</span>
+              <span className="text-black">1 día antes</span>
               <button
                 className={`w-12 h-6 rounded-full ${reminders.oneDay ? "bg-[#C4F439]" : "bg-gray-300"} relative`}
                 onClick={() => toggleReminder("oneDay")}
@@ -223,9 +184,8 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
                 />
               </button>
             </div>
-
             <div className="flex justify-between items-center">
-              <span className="text-gray-700">1 semana antes de vencer</span>
+              <span className="text-black">1 semana antes</span>
               <button
                 className={`w-12 h-6 rounded-full ${reminders.oneWeek ? "bg-[#C4F439]" : "bg-gray-300"} relative`}
                 onClick={() => toggleReminder("oneWeek")}
@@ -235,9 +195,8 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
                 />
               </button>
             </div>
-
             <div className="flex justify-between items-center">
-              <span className="text-gray-700">1 mes antes de vencer</span>
+              <span className="text-black">1 mes antes</span>
               <button
                 className={`w-12 h-6 rounded-full ${reminders.oneMonth ? "bg-[#C4F439]" : "bg-gray-300"} relative`}
                 onClick={() => toggleReminder("oneMonth")}
@@ -249,23 +208,23 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
             </div>
           </div>
         </div>
-        <hr className="my-4 border-gray-200 mx-16" />
+        {/* Bottom Divider */}
+        <div className="flex justify-center mb-10">
+          <hr className="w-[90%] border-gray-200" />
+        </div>
         {/* Action Button */}
-        <div className="px-10 py-6">
-          <div className="mx-8">
-            <button
-              onClick={() => handleQuoteClick(licensePlate)}
-              className="py-3 px-6 rounded-full font-bold transition duration-300 hover:opacity-90 hover:scale-105"
-              style={{ backgroundColor: "#C4F439", color: COLORS.black }}
-            >
-              Cotizar SOAT
-            </button>
-          </div>
+        <div className="flex justify-start mb-4 mx-8 mb-14">
+          <button
+            onClick={() => handleQuoteClick(licensePlate)}
+            className="py-3 px-6 rounded-full font-bold transition duration-300 hover:opacity-90 hover:scale-105"
+            style={{ backgroundColor: "#C4F439", color: "#000" }}
+          >
+            Cotízar Póliza
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default SOATDetailModal;
-
+export default InsuranceDetailsModal;

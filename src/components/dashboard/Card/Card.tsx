@@ -5,12 +5,13 @@ import { COLORS } from "../../../utils/constants";
 interface CardProps {
   icon: React.ReactNode;
   title: string;
-  status: "Vigente" | "Prox. vencer" | "Vencido";
+  status: "Vigente" | "Prox. vencer" | "Vencido" | "Sin informacion";
 }
 
 const statusColors = {
   Vigente: COLORS.green,
   "Prox. vencer": COLORS.orange,
+  "Sin informacion": COLORS.red,
   Vencido: COLORS.red,
 };
 

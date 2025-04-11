@@ -51,7 +51,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
               {/* @ts-ignore */}
               <FaCar size={16} color={COLORS.black} />
             </div>
-            <span>Vehicle Information</span>
+            <span>Información del vehiculo</span>
           </button>
 
           <button
@@ -62,7 +62,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
               {/* @ts-ignore */}
               <FaClipboardList size={16} color={COLORS.black} />
             </div>
-            <span>Maintenance Report</span>
+            <span>Reporte de mantenimiento</span>
           </button>
 
           <button
@@ -73,7 +73,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
               {/* @ts-ignore */}
               <FaSignOutAlt size={16} color={COLORS.black} />
             </div>
-            <span>Log Out</span>
+            <span>Salir</span>
           </button>
         </div>
       </div>

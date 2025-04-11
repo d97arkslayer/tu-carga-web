@@ -10,25 +10,37 @@ import RecoverPasswordPage from "./pages/ResetPasswordRequestPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import PasswordResetedPage from "./pages/PasswordResetedPage";
 import DashboardPage from "./pages/DashboardPage";
+import { VehiclesProvider } from "./context/VehiclesContext";
+import { UserProvider } from "./context/UserContext";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Layout>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/email-verified" element={<EmailVerifiedPage />} />
-          <Route path="/recover-account" element={<RecoverPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/account-recovered" element={<PasswordResetedPage />} />
-          <Route
-            path="/verification-email"
-            element={<VerificationCodeEmailPage />}
-          />
-          <Route path="/dashboard" element={<DashboardPage />} />
-        </Routes>
+        <UserProvider>
+          <VehiclesProvider>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
+              <Route path="/email-verified" element={<EmailVerifiedPage />} />
+              <Route
+                path="/recover-account"
+                element={<RecoverPasswordPage />}
+              />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route
+                path="/account-recovered"
+                element={<PasswordResetedPage />}
+              />
+              <Route
+                path="/verification-email"
+                element={<VerificationCodeEmailPage />}
+              />
+              <Route path="/dashboard" element={<DashboardPage />} />
+            </Routes>
+          </VehiclesProvider>
+        </UserProvider>
       </Layout>
     </Router>
   );
