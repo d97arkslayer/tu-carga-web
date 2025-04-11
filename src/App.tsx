@@ -12,6 +12,7 @@ import PasswordResetedPage from "./pages/PasswordResetedPage";
 import DashboardPage from "./pages/DashboardPage";
 import { VehiclesProvider } from "./context/VehiclesContext";
 import { UserProvider } from "./context/UserContext";
+import { UserItemsProvider } from "./context/UserItemsContext";
 
 const App: React.FC = () => {
   return (
@@ -19,26 +20,28 @@ const App: React.FC = () => {
       <Layout>
         <UserProvider>
           <VehiclesProvider>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/email-verified" element={<EmailVerifiedPage />} />
-              <Route
-                path="/recover-account"
-                element={<RecoverPasswordPage />}
-              />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
-              <Route
-                path="/account-recovered"
-                element={<PasswordResetedPage />}
-              />
-              <Route
-                path="/verification-email"
-                element={<VerificationCodeEmailPage />}
-              />
-              <Route path="/dashboard" element={<DashboardPage />} />
-            </Routes>
+            <UserItemsProvider>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/email-verified" element={<EmailVerifiedPage />} />
+                <Route
+                  path="/recover-account"
+                  element={<RecoverPasswordPage />}
+                />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+                <Route
+                  path="/account-recovered"
+                  element={<PasswordResetedPage />}
+                />
+                <Route
+                  path="/verification-email"
+                  element={<VerificationCodeEmailPage />}
+                />
+                <Route path="/dashboard" element={<DashboardPage />} />
+              </Routes>
+            </UserItemsProvider>
           </VehiclesProvider>
         </UserProvider>
       </Layout>

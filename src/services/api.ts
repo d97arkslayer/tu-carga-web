@@ -120,6 +120,22 @@ export const userAPI = {
       throw error.response?.data || { message: "Error fetching vehicles data" };
     }
   },
+  getUserItems: async (idUser: number) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+      const response = await apiClient.get(`/user-items/user/${idUser}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw (
+        error.response?.data || { message: "Error fetching user items data" }
+      );
+    }
+  },
 };
 
 // Example function to fetch data

@@ -10,17 +10,21 @@ import InsuranceDetailsModal from "../InsuranceDetailsModal/InsuranceDetailsModa
 import SOATDetailModal from "../SOATDetailModal";
 import TecnoDetailModal from "../TecnoDetailModal/TecnoDetailModal";
 import RoadKitDetailModal from "../RoadKitDetailModal/RoadKitDetailModal";
+import LicenseDetailModal from "../LicenseDetailModal/LicenseDetailModal";
 import { useUserContext } from "../../../context/UserContext";
 import { useVehiclesContext } from "../../../context/VehiclesContext";
+import { useUserItemsContext } from "../../../context/UserItemsContext";
 
 const Dashboard: React.FC = () => {
   const [showSOATModal, setShowSOATModal] = useState(false);
   const [showTecnoModal, setShowTecnoModal] = useState(false);
   const [showRoadKitModal, setShowRoadKitModal] = useState(false);
   const [showInsuranceModal, setShowInsuranceModal] = useState(false);
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
   const { user } = useUserContext();
   const { vehicles, selectedVehicle, setSelectedVehicleByPlate } =
     useVehiclesContext();
+  const { userItems } = useUserItemsContext();
 
   // Helper function to compute soat status based on expirationDate
   const getSoatStatus = (expDate?: string | null) => {
@@ -75,6 +79,11 @@ const Dashboard: React.FC = () => {
     ? getSoatStatus(insuranceItem.expiryDate)
     : "Sin informacion";
 
+  // Retrieve license item from userItems context
+  const licenseItem = userItems?.find(
+    (item) => item.category.toLowerCase() === "license",
+  );
+
   return (
     <section className="bg-white rounded-[25px] shadow-lg p-8 mx-8 my-12">
       <h2 className="text-2xl font-bold mb-2">Hola, {`${user?.name}`}</h2>
@@ -113,15 +122,28 @@ const Dashboard: React.FC = () => {
             status={tecnoStatus}
           />
         </div>
-        <Card
-          // @ts-ignore
-          icon={
-            <img src={LicenceIcon} alt="license Icon" width={30} height={30} />
-          }
-          title="Licencia de conducción"
-          status="Vencido"
-        />
-
+        <div
+          onClick={() => setShowLicenseModal(true)}
+          className="cursor-pointer"
+        >
+          <Card
+            // @ts-ignore
+            icon={
+              <img
+                src={LicenceIcon}
+                alt="license Icon"
+                width={30}
+                height={30}
+              />
+            }
+            title="Licencia de conducción"
+            status={
+              licenseItem
+                ? getSoatStatus(licenseItem.expiryDate)
+                : "Sin informacion"
+            }
+          />
+        </div>
         <div
           onClick={() => setShowRoadKitModal(true)}
           className="cursor-pointer"
@@ -185,6 +207,12 @@ const Dashboard: React.FC = () => {
           issueDate={tecnoIssueDate}
           revisionNumber={revisionNumber}
           licensePlate={licensePlate}
+        />
+      )}
+      {showLicenseModal && (
+        <LicenseDetailModal
+          onClose={() => setShowLicenseModal(false)}
+          licenseItem={licenseItem || null}
         />
       )}
       {showRoadKitModal && (
