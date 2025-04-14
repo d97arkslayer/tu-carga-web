@@ -92,6 +92,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
           vehicles={vehicles}
           selectedVehicle={selectedVehicle}
           setSelectedVehicleByPlate={setSelectedVehicleByPlate}
+          onClose={() => setShowInformationModal(false)}
         ></VehiclesInformationModal>
       )}
     </>

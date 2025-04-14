@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import { COLORS } from "../../../utils/constants";
-import { FaTimes } from "react-icons/fa";
-import SoatIcon from "../../../assets/icons/soat.png";
 import { Vehicle } from "@/types";
 import { X, Trash2, ChevronDown, Plus } from "lucide-react"; // Usa lucide-react o cualquier librería de íconos
 
@@ -9,12 +6,14 @@ interface VehicleInformationModalProps {
   selectedVehicle: Vehicle | null;
   vehicles: Vehicle[] | null;
   setSelectedVehicleByPlate: (plate: string) => void;
+  onClose: () => void;
 }
 
 const VehiclesInformationModal: React.FC<VehicleInformationModalProps> = ({
   vehicles,
   selectedVehicle,
   setSelectedVehicleByPlate,
+  onClose,
 }) => {
   // Handle change event for vehicle selection
   const handleVehicleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -46,13 +45,19 @@ const VehiclesInformationModal: React.FC<VehicleInformationModalProps> = ({
 
   // @ts-ignore
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      onClick={onClose}
+    >
       <div
         className="bg-white rounded-[30px] w-full max-w-3xl mx-4 p-8 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Botón cerrar */}
-        <button className="absolute top-6 right-6 bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+        <button
+          className="absolute top-6 right-6 bg-gray-100 p-2 rounded-full hover:bg-gray-200"
+          onClick={onClose}
+        >
           <X className="w-5 h-5 text-gray-600" />
         </button>
 
