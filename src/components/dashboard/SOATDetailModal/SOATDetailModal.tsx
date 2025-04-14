@@ -268,4 +268,3 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
 };
 
 export default SOATDetailModal;
-
