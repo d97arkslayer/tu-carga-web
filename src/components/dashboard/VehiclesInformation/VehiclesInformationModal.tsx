@@ -117,7 +117,7 @@ const VehiclesInformationModal: React.FC<VehicleInformationModalProps> = ({
           <div className="col-span-2">
             <p className="text-gray-500">Organismo de tránsito</p>
             <p className="font-semibold">
-              Secretaría de Movilidad de Manizales
+              Secretaría de Movilidad de {selectedVehicle?.from}
             </p>
           </div>
         </div>
