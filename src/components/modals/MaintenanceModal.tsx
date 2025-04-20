@@ -160,7 +160,7 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const { selectedVehicle } = useVehiclesContext();
+  const { selectedVehicle, refreshVehicles } = useVehiclesContext();
 
   const handleSubmit = async () => {
     if (!selectedVehicle || !selectedVehicle.id) {
@@ -224,7 +224,20 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose }) => {
       }
 
       // Send data to API
-      await maintenanceAPI.createMaintenance(maintenanceData);
+      const response = await maintenanceAPI.createMaintenance(maintenanceData);
+
+      // Agregamos un pequeño retraso antes de refrescar los vehículos para asegurar
+      // que el backend haya procesado completamente el nuevo mantenimiento
+      setTimeout(async () => {
+        try {
+          await refreshVehicles();
+          console.log(
+            "Vehículos actualizados después de agregar mantenimiento",
+          );
+        } catch (refreshError) {
+          console.error("Error al actualizar vehículos:", refreshError);
+        }
+      }, 500);
 
       // Show success message
       toast.success("Mantenimiento registrado con éxito");

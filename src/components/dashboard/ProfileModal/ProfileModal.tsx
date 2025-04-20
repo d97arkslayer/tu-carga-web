@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { COLORS } from "../../../utils/constants";
 import { FaUser, FaCar, FaClipboardList, FaSignOutAlt } from "react-icons/fa";
 import VehiclesInformationModal from "../VehiclesInformation/VehiclesInformationModal";
+import MaintenanceReportModal from "../MaintenanceReportModal/MaintenanceReportModal";
 import { useVehiclesContext } from "../../../context/VehiclesContext";
 
 interface ProfileModalProps {
@@ -24,6 +25,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   };
 
   const [showVehiclesInformationModal, setShowInformationModal] =
+    useState(false);
+  const [showMaintenanceReportModal, setShowMaintenanceReportModal] =
     useState(false);
 
   const { vehicles, selectedVehicle, setSelectedVehicleByPlate } =
@@ -65,7 +68,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
 
             <button
               className="w-full text-left px-4 py-3 flex items-center hover:bg-gray-100 rounded-lg"
-              onClick={() => onMenuItemClick("maintenance")}
+              onClick={() => setShowMaintenanceReportModal(true)}
             >
               <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
                 {/* @ts-ignore */}
@@ -94,6 +97,11 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
           setSelectedVehicleByPlate={setSelectedVehicleByPlate}
           onClose={() => setShowInformationModal(false)}
         ></VehiclesInformationModal>
+      )}
+      {showMaintenanceReportModal && (
+        <MaintenanceReportModal
+          onClose={() => setShowMaintenanceReportModal(false)}
+        />
       )}
     </>
   );

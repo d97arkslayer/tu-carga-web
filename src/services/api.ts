@@ -152,6 +152,7 @@ export const maintenanceAPI = {
     tireChange?: {
       lastChangeDate: string;
       nextChangeDate: string;
+      currentMileage: number;
     };
     maintenanceItems?: Array<{
       description: string;
@@ -171,7 +172,6 @@ export const maintenanceAPI = {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("PUTA", response);
 
       return response.data;
     } catch (error: any) {
