@@ -138,6 +138,99 @@ export const userAPI = {
   },
 };
 
+// Maintenance related functions
+export const maintenanceAPI = {
+  createMaintenance: async (maintenanceData: {
+    vehicleId: number;
+    price: number;
+    type: string;
+    serviceCenter: string;
+    oilChange?: {
+      currentMileage: number;
+      nextMileage: number;
+    };
+    tireChange?: {
+      lastChangeDate: string;
+      nextChangeDate: string;
+    };
+    maintenanceItems?: Array<{
+      description: string;
+      price: number;
+      currentMileage: number;
+    }>;
+  }) => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+
+      const response = await apiClient.post("/maintenances", maintenanceData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("PUTA", response);
+
+      return response.data;
+    } catch (error: any) {
+      throw (
+        error.response?.data || { message: "Error creating maintenance record" }
+      );
+    }
+  },
+
+  getVehicleMaintenances: async (vehicleId: number) => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+
+      const response = await apiClient.get(
+        `/maintenances/vehicle/${vehicleId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      return response.data;
+    } catch (error: any) {
+      throw (
+        error.response?.data || {
+          message: "Error fetching maintenance records",
+        }
+      );
+    }
+  },
+
+  getAllMaintenances: async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+
+      const response = await apiClient.get("/maintenances", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw (
+        error.response?.data || {
+          message: "Error fetching all maintenance records",
+        }
+      );
+    }
+  },
+};
+
 // Example function to fetch data
 export const fetchData = async (endpoint: string) => {
   try {

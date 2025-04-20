@@ -192,7 +192,6 @@ const Dashboard: React.FC = () => {
               />
             }
             title="Mantenimiento"
-            status="Vigente"
           />
         </div>
       </div>

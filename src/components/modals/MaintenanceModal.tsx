@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FaTimes, FaWrench } from "react-icons/fa";
 import { COLORS } from "../../utils/constants";
-import { useVehiclesContext } from "../../context/VehiclesContext"; // Importando el contexto
-import { quoteTiresService } from "../../services/whatsappService"; // Importando el nuevo servicio
+import { useVehiclesContext } from "../../context/VehiclesContext";
+import { quoteTiresService } from "../../services/whatsappService";
+import { maintenanceAPI } from "../../services/api"; // Import the maintenanceAPI
+import { toast } from "react-hot-toast"; // Assuming you use toast for notifications
 
 interface MaintenanceModalProps {
   onClose: () => void;
@@ -68,6 +70,8 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose }) => {
     if (maintenanceType === "oil_change") {
       setOilCurrentMileage(value);
       setOilNextMileage(calculateNextMileage(value));
+    } else if (maintenanceType === "tire_change") {
+      setTireCurrentMileage(value);
     } else if (maintenanceType === "other") {
       setOtherCurrentMileage(value);
     }
@@ -98,6 +102,7 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose }) => {
   const [tireNextChangeDate, setTireNextChangeDate] = useState("");
   const [tirePrice, setTirePrice] = useState("");
   const [tireServiceCenter, setTireServiceCenter] = useState("");
+  const [tireCurrentMileage, setTireCurrentMileage] = useState(""); // Nuevo estado para kilometraje actual de llantas
   const [tireReminders, setTireReminders] = useState({
     oneDay: false,
     oneWeek: false,
@@ -152,23 +157,94 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose }) => {
     }
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
   const { selectedVehicle } = useVehiclesContext();
 
-  const handleSubmit = () => {
-    // TODO: Validate and submit data to API
-    console.log("Submitting", maintenanceType, {
-      oilCurrentMileage,
-      tireLastChangeDate,
-      otherItems,
-    });
-    handleClose();
+  const handleSubmit = async () => {
+    if (!selectedVehicle || !selectedVehicle.id) {
+      setError("No hay vehículo seleccionado");
+      return;
+    }
+
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      let maintenanceData: any = {
+        vehicleId: selectedVehicle.id,
+        type:
+          maintenanceType === "oil_change"
+            ? "oil_change"
+            : maintenanceType === "tire_change"
+              ? "tire_change"
+              : "other",
+      };
+
+      if (maintenanceType === "oil_change") {
+        // Prepare oil change data
+        maintenanceData = {
+          ...maintenanceData,
+          price: parseFloat(oilPrice.replace(/[^\d]/g, "")),
+          serviceCenter: oilServiceCenter || "No especificado",
+          oilChange: {
+            currentMileage: parseInt(oilCurrentMileage),
+            nextMileage: parseInt(oilNextMileage),
+          },
+        };
+      } else if (maintenanceType === "tire_change") {
+        // Prepare tire change data
+        maintenanceData = {
+          ...maintenanceData,
+          price: parseFloat(tirePrice || "0"),
+          serviceCenter: tireServiceCenter || "No especificado",
+          tireChange: {
+            lastChangeDate: new Date(tireLastChangeDate).toISOString(),
+            nextChangeDate: new Date(tireNextChangeDate).toISOString(),
+            currentMileage: tireCurrentMileage
+              ? parseInt(tireCurrentMileage)
+              : undefined,
+          },
+        };
+      } else if (maintenanceType === "other") {
+        // Prepare other maintenance data
+        const maintenanceItems = otherItems.map((item) => ({
+          description: item.description,
+          price: parseFloat(item.price),
+          currentMileage: parseInt(otherCurrentMileage),
+        }));
+
+        maintenanceData = {
+          ...maintenanceData,
+          price: totalPrice,
+          serviceCenter: otherServiceCenter || "No especificado",
+          maintenanceItems,
+        };
+      }
+
+      // Send data to API
+      await maintenanceAPI.createMaintenance(maintenanceData);
+
+      // Show success message
+      toast.success("Mantenimiento registrado con éxito");
+
+      // Close modal
+      handleClose();
+    } catch (err: any) {
+      console.error("Error al registrar mantenimiento:", err);
+      setError(err?.message || "Error al registrar el mantenimiento");
+      toast.error("No se pudo registrar el mantenimiento");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleQuote = () => {
     if (selectedVehicle) {
       quoteTiresService(selectedVehicle.plate);
     } else {
-      console.error("No hay vehículo seleccionado");
+      setError("No hay vehículo seleccionado");
     }
   };
 
@@ -196,7 +272,7 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose }) => {
     if (maintenanceType === "oil_change") {
       return oilCurrentMileage.trim() !== "" && oilPrice.trim() !== "";
     } else if (maintenanceType === "tire_change") {
-      return tireLastChangeDate.trim() !== "" && tirePrice.trim() !== "";
+      return tireLastChangeDate.trim() !== "";
     } else if (maintenanceType === "other") {
       return (
         otherCurrentMileage.trim() !== "" &&
@@ -276,9 +352,9 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose }) => {
                   value={
                     maintenanceType === "oil_change"
                       ? oilCurrentMileage
-                      : maintenanceType === "other"
-                        ? otherCurrentMileage
-                        : ""
+                      : maintenanceType === "tire_change"
+                        ? tireCurrentMileage
+                        : otherCurrentMileage
                   }
                   onChange={handleCurrentMileageChange}
                   className={numberInputStyle}
@@ -669,14 +745,14 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose }) => {
           <div className="flex justify-start gap-4 mx-8">
             <button
               onClick={handleSubmit}
-              disabled={!isFormValid()}
+              disabled={!isFormValid() || isSubmitting}
               className={`py-3 px-6 rounded-full font-bold transition duration-300 ${
-                isFormValid()
+                isFormValid() && !isSubmitting
                   ? "bg-lime-400 text-black hover:opacity-90 hover:scale-105"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
-              Guardar
+              {isSubmitting ? "Guardando..." : "Guardar"}
             </button>
             {maintenanceType === "tire_change" && (
               <button
@@ -687,6 +763,13 @@ const MaintenanceModal: React.FC<MaintenanceModalProps> = ({ onClose }) => {
               </button>
             )}
           </div>
+
+          {/* Display error message if there is one */}
+          {error && (
+            <div className="text-left mt-3 mx-8">
+              <span className="text-red-500 text-sm">{error}</span>
+            </div>
+          )}
 
           {/* Mensaje de campos obligatorios */}
           <div className="text-left mt-3 mx-8">

@@ -5,7 +5,7 @@ import { COLORS } from "../../../utils/constants";
 interface CardProps {
   icon: React.ReactNode;
   title: string;
-  status: "Vigente" | "Prox. vencer" | "Vencido" | "Sin informacion";
+  status?: "Vigente" | "Prox. vencer" | "Vencido" | "Sin informacion"; // Haciendo status opcional
 }
 
 const statusColors = {
@@ -29,12 +29,14 @@ const Card: React.FC<CardProps> = ({ icon, title, status }) => {
       <div className="flex flex-col items-center flex-grow justify-center">
         <h3 className="font-semibold text-sm text-center">{title}</h3>
       </div>
-      <span
-        className="font-bold mt-auto mb-4 px-3 py-1 rounded-full text-black text-xs"
-        style={{ backgroundColor: statusColors[status] }}
-      >
-        {status}
-      </span>
+      {status && (
+        <span
+          className="font-bold mt-auto mb-4 px-3 py-1 rounded-full text-black text-xs"
+          style={{ backgroundColor: statusColors[status] }}
+        >
+          {status}
+        </span>
+      )}
     </div>
   );
 };
