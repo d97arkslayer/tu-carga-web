@@ -11,6 +11,7 @@ import SOATDetailModal from "../SOATDetailModal";
 import TecnoDetailModal from "../TecnoDetailModal/TecnoDetailModal";
 import RoadKitDetailModal from "../RoadKitDetailModal/RoadKitDetailModal";
 import LicenseDetailModal from "../LicenseDetailModal/LicenseDetailModal";
+import MaintenanceModal from "../../modals/MaintenanceModal";
 import { useUserContext } from "../../../context/UserContext";
 import { useVehiclesContext } from "../../../context/VehiclesContext";
 import { useUserItemsContext } from "../../../context/UserItemsContext";
@@ -21,6 +22,7 @@ const Dashboard: React.FC = () => {
   const [showRoadKitModal, setShowRoadKitModal] = useState(false);
   const [showInsuranceModal, setShowInsuranceModal] = useState(false);
   const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const { user } = useUserContext();
   const { vehicles, selectedVehicle, setSelectedVehicleByPlate } =
     useVehiclesContext();
@@ -175,19 +177,24 @@ const Dashboard: React.FC = () => {
             status={insuranceStatus}
           />
         </div>
-        <Card
-          // @ts-ignore
-          icon={
-            <img
-              src={MaintainanceIcon}
-              alt="Maintainance Icon"
-              width={30}
-              height={30}
-            />
-          }
-          title="Mantenimiento"
-          status="Vigente"
-        />
+        <div
+          onClick={() => setShowMaintenanceModal(true)}
+          className="cursor-pointer"
+        >
+          <Card
+            // @ts-ignore
+            icon={
+              <img
+                src={MaintainanceIcon}
+                alt="Maintainance Icon"
+                width={30}
+                height={30}
+              />
+            }
+            title="Mantenimiento"
+            status="Vigente"
+          />
+        </div>
       </div>
       {showSOATModal && (
         <SOATDetailModal
@@ -229,6 +236,9 @@ const Dashboard: React.FC = () => {
           issuanceDate={insuranceIssueDate}
           licensePlate={licensePlate}
         />
+      )}
+      {showMaintenanceModal && (
+        <MaintenanceModal onClose={() => setShowMaintenanceModal(false)} />
       )}
     </section>
   );

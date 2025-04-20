@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { COLORS } from "../../../utils/constants";
 import { FaTimes } from "react-icons/fa";
 import SoatIcon from "../../../assets/icons/soat.png";
+import { quoteSOATService } from "../../../services/whatsappService"; // Importar el servicio de WhatsApp
 
 interface SOATDetailModalProps {
   onClose: () => void;
@@ -42,18 +43,7 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
   };
 
   const handleQuoteClick = (licensePlate: string) => {
-    // Get the license plate from Dashboard (currently hardcoded as "JNN813")
-
-    // Format the WhatsApp message and encode it for URL
-    const message = encodeURIComponent(
-      `Hola quiero contizar el SOAT para el vehiculo de placa: ${licensePlate}`,
-    );
-
-    // Create WhatsApp URL (57 is Colombia country code)
-    const whatsappUrl = `https://wa.me/573151957777?text=${message}`;
-
-    // Open WhatsApp in a new tab
-    window.open(whatsappUrl, "_blank");
+    quoteSOATService(licensePlate);
   };
 
   const toggleReminder = (key: keyof typeof reminders) => {
@@ -268,4 +258,3 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
 };
 
 export default SOATDetailModal;
-
