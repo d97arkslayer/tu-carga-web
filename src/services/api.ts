@@ -180,6 +180,40 @@ export const vehicleAPI = {
   },
 };
 
+// Vehicle items related functions
+export const vehicleItemsAPI = {
+  createVehicleItem: async (vehicleItemData: {
+    vehicleId: number;
+    type?: string;
+    name?: string;
+    expiryDate?: string;
+    issueDate?: string;
+    price?: number;
+    provider?: string;
+    notes?: string;
+    documentUrl?: string;
+    itemIdentifier?: string;
+  }) => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+
+      const response = await apiClient.post("/vehicle-items", vehicleItemData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || { message: "Error creating vehicle item" };
+    }
+  },
+};
+
 // Maintenance related functions
 export const maintenanceAPI = {
   createMaintenance: async (maintenanceData: {

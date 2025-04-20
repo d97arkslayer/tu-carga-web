@@ -199,22 +199,52 @@ export const VehiclesProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Función pública para refrescar los vehículos después de una actualización
   const refreshVehicles = async () => {
+    // Guardar referencia al vehículo seleccionado actual (placa y ID)
+    const currentSelectedVehiclePlate = selectedVehicle?.plate;
     const currentSelectedVehicleId = selectedVehicle?.id;
     console.log(
-      "Refrescando vehículos. ID actual seleccionado:",
+      "Refrescando vehículos. Vehículo actual:",
+      currentSelectedVehiclePlate,
+      "ID:",
       currentSelectedVehicleId,
     );
 
+    // Obtener datos nuevos
     await fetchVehicles();
 
     // Si había un vehículo seleccionado, intentamos seleccionar el mismo después de actualizar
     if (currentSelectedVehicleId && vehicles) {
-      const updatedSelectedVehicle = vehicles.find(
+      console.log(
+        "Buscando vehículo actualizado con ID:",
+        currentSelectedVehicleId,
+      );
+
+      // Buscar el vehículo actualizado por ID
+      const updatedVehicle = vehicles.find(
         (v) => v.id === currentSelectedVehicleId,
       );
-      if (updatedSelectedVehicle) {
-        setSelectedVehicle(updatedSelectedVehicle);
-        console.log("Vehículo seleccionado actualizado con los nuevos datos");
+
+      if (updatedVehicle) {
+        console.log(
+          "Vehículo encontrado, actualizando el seleccionado con los nuevos datos",
+        );
+        // Establecer explícitamente el vehículo seleccionado con los datos actualizados
+        setSelectedVehicle(updatedVehicle);
+      } else if (currentSelectedVehiclePlate) {
+        // Intentar buscar por placa como respaldo
+        console.log(
+          "No se encontró por ID, buscando por placa:",
+          currentSelectedVehiclePlate,
+        );
+        const vehicleByPlate = vehicles.find(
+          (v) => v.plate === currentSelectedVehiclePlate,
+        );
+        if (vehicleByPlate) {
+          console.log(
+            "Vehículo encontrado por placa, actualizando seleccionado",
+          );
+          setSelectedVehicle(vehicleByPlate);
+        }
       }
     }
   };

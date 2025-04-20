@@ -3,15 +3,18 @@ import React, { useState } from "react";
 import { COLORS } from "../../../utils/constants";
 import { FaTimes } from "react-icons/fa";
 import SoatIcon from "../../../assets/icons/soat.png";
-import { quoteSOATService } from "../../../services/whatsappService"; // Importar el servicio de WhatsApp
+import { quoteSOATService } from "../../../services/whatsappService";
+import AddSOATModal from "../AddSOATModal/AddSOATModal";
+import { useVehiclesContext } from "../../../context/VehiclesContext";
 
 interface SOATDetailModalProps {
-  onClose: () => void;
+  onClose: (shouldRefresh?: boolean) => void;
   status: string;
   expirationDate: string;
   issueDate: string;
   policyNumber: string;
   licensePlate: string;
+  vehicleId: number;
 }
 
 const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
@@ -21,12 +24,17 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
   issueDate,
   policyNumber,
   licensePlate,
+  vehicleId,
 }) => {
+  const { refreshVehicles } = useVehiclesContext();
   const [reminders, setReminders] = useState({
     oneDay: false,
     oneWeek: false,
     oneMonth: false,
   });
+
+  const [showAddSOATModal, setShowAddSOATModal] = useState(false);
+  const [soatUpdated, setSoatUpdated] = useState(false);
 
   // New: status colors mapping (consistent with Card)
   const statusColors: Record<string, string> = {
@@ -38,7 +46,8 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      // Cerrar con refreshVehicles si se actualizó el SOAT
+      onClose(soatUpdated);
     }
   };
 
@@ -53,77 +62,113 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
     }));
   };
 
+  const handleAddSOATClick = () => {
+    setShowAddSOATModal(true);
+  };
+
+  const handleAddSOATClose = async (wasSuccessful = false) => {
+    setShowAddSOATModal(false);
+
+    if (wasSuccessful) {
+      console.log("SOAT guardado exitosamente, actualizando estado");
+      setSoatUpdated(true);
+
+      // Cerrar ambos modales y refrescar
+      // Importante: señalamos que se necesita refrescar
+      onClose(true);
+    }
+  };
+
+  const handleModalClose = () => {
+    // Cerrar con refreshVehicles si se actualizó el SOAT
+    onClose(soatUpdated);
+  };
+
   // Helper function to format dates to "dd month yyyy" in Spanish
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const day = date.getDate().toString().padStart(2, "0");
-    const months = [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre",
-    ];
-    const month = months[date.getMonth()];
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
+    if (!dateStr) return "No disponible";
+    try {
+      const date = new Date(dateStr);
+      const day = date.getDate().toString().padStart(2, "0");
+      const months = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+      ];
+      const month = months[date.getMonth()];
+      const year = date.getFullYear();
+      return `${day} ${month} ${year}`;
+    } catch (e) {
+      return "Formato de fecha inválido";
+    }
   };
 
   if (status === "Sin informacion") {
     return (
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-        onClick={handleBackdropClick}
-      >
+      <>
         <div
-          className="bg-white rounded-[20px] shadow-lg w-full max-w-2xl min-w-[500px] overflow-hidden border border-blue-100 transform transition-all duration-300"
-          onClick={(e) => e.stopPropagation()}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={handleBackdropClick}
         >
-          {/* Header Section */}
-          <div className="px-10 py-6 flex justify-between items-center border-gray-200">
-            <div className="flex items-center mt-3">
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
-                style={{ backgroundColor: "#C4F439" }}
+          <div
+            className="bg-white rounded-[20px] shadow-lg w-full max-w-2xl min-w-[500px] overflow-hidden border border-blue-100 transform transition-all duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header Section */}
+            <div className="px-10 py-6 flex justify-between items-center border-gray-200">
+              <div className="flex items-center mt-3">
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
+                  style={{ backgroundColor: "#C4F439" }}
+                >
+                  <img src={SoatIcon} height={24} width={24} alt="SOAT Icon" />
+                </div>
+                <h3 className="font-bold text-xl">Información no disponible</h3>
+              </div>
+              <button
+                onClick={handleModalClose}
+                className="bg-gray-100 p-2 rounded-full text-black hover:bg-gray-200 transition-colors"
               >
                 {/* @ts-ignore */}
-                <img src={SoatIcon} height={24} width={24} />
-              </div>
-              <h3 className="font-bold text-xl">Información no disponible</h3>
+                <FaTimes size={24} />
+              </button>
             </div>
-            <button
-              onClick={onClose}
-              className="bg-gray-100 p-2 rounded-full text-black hover:bg-gray-200 transition-colors"
-            >
-              {/* @ts-ignore */}
-              <FaTimes size={24} />
-            </button>
-          </div>
-          <div className="px-10 py-6">
-            <p className="mb-4">
-              No tenemos esa información, por favor agrega la información para
-              ver los detalles.
-            </p>
-            <button
-              className="py-3 px-6 rounded-full font-bold transition duration-300 hover:opacity-90 hover:scale-105"
-              style={{ backgroundColor: "#C4F439", color: COLORS.black }}
-            >
-              Agregar información
-            </button>
+            <div className="px-10 py-6">
+              <p className="mb-4">
+                No tenemos esa información, por favor agrega la información para
+                ver los detalles.
+              </p>
+              <button
+                onClick={handleAddSOATClick}
+                className="py-3 px-6 rounded-full font-bold transition duration-300 hover:opacity-90 hover:scale-105"
+                style={{ backgroundColor: "#C4F439", color: COLORS.black }}
+              >
+                Agregar información
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+
+        {showAddSOATModal && (
+          <AddSOATModal
+            onClose={handleAddSOATClose}
+            vehicleId={vehicleId}
+            licensePlate={licensePlate}
+          />
+        )}
+      </>
     );
   }
 
-  // @ts-ignore
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
@@ -145,13 +190,12 @@ const SOATDetailModal: React.FC<SOATDetailModalProps> = ({
               className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
               style={{ backgroundColor: "#C4F439" }}
             >
-              {/* @ts-ignore */}
-              <img src={SoatIcon} height={24} width={24} />
+              <img src={SoatIcon} height={24} width={24} alt="SOAT Icon" />
             </div>
             <h3 className="font-bold text-xl">Seguro SOAT</h3>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleModalClose}
             className="bg-gray-100 p-2 rounded-full text-black hover:bg-gray-200 transition-colors"
           >
             {/* @ts-ignore */}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Card from "../Card";
 import InsuranceIcon from "../../../assets/icons/insurance.png";
 import SoatIcon from "../../../assets/icons/soat.png";
@@ -24,8 +24,12 @@ const Dashboard: React.FC = () => {
   const [showLicenseModal, setShowLicenseModal] = useState(false);
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const { user } = useUserContext();
-  const { vehicles, selectedVehicle, setSelectedVehicleByPlate } =
-    useVehiclesContext();
+  const {
+    vehicles,
+    selectedVehicle,
+    setSelectedVehicleByPlate,
+    refreshVehicles,
+  } = useVehiclesContext();
   const { userItems } = useUserItemsContext();
 
   // Helper function to compute soat status based on expirationDate
@@ -84,6 +88,60 @@ const Dashboard: React.FC = () => {
   // Retrieve license item from userItems context
   const licenseItem = userItems?.find(
     (item) => item.category.toLowerCase() === "license",
+  );
+
+  // Callback para manejar el cierre del modal SOAT con actualización
+  const handleSOATModalClose = useCallback(
+    async (shouldRefresh = false) => {
+      if (shouldRefresh) {
+        console.log(
+          "Dashboard: Refrescando vehículos después de actualizar SOAT",
+        );
+        await refreshVehicles();
+      }
+      setShowSOATModal(false);
+    },
+    [refreshVehicles],
+  );
+
+  // Similar handlers for other modals that might need to refresh vehicles data
+  const handleTecnoModalClose = useCallback(
+    async (shouldRefresh = false) => {
+      if (shouldRefresh) {
+        console.log(
+          "Dashboard: Refrescando vehículos después de actualizar Tecno",
+        );
+        await refreshVehicles();
+      }
+      setShowTecnoModal(false);
+    },
+    [refreshVehicles],
+  );
+
+  const handleInsuranceModalClose = useCallback(
+    async (shouldRefresh = false) => {
+      if (shouldRefresh) {
+        console.log(
+          "Dashboard: Refrescando vehículos después de actualizar seguro",
+        );
+        await refreshVehicles();
+      }
+      setShowInsuranceModal(false);
+    },
+    [refreshVehicles],
+  );
+
+  const handleRoadKitModalClose = useCallback(
+    async (shouldRefresh = false) => {
+      if (shouldRefresh) {
+        console.log(
+          "Dashboard: Refrescando vehículos después de actualizar kit",
+        );
+        await refreshVehicles();
+      }
+      setShowRoadKitModal(false);
+    },
+    [refreshVehicles],
   );
 
   return (
@@ -197,17 +255,18 @@ const Dashboard: React.FC = () => {
       </div>
       {showSOATModal && (
         <SOATDetailModal
-          onClose={() => setShowSOATModal(false)}
+          onClose={handleSOATModalClose}
           status={soatStatus}
           expirationDate={soatExpirationDate}
           issueDate={soatIssueDate}
           policyNumber={policyNumber}
           licensePlate={licensePlate}
+          vehicleId={selectedVehicle?.id || 0}
         />
       )}
       {showTecnoModal && (
         <TecnoDetailModal
-          onClose={() => setShowTecnoModal(false)}
+          onClose={handleTecnoModalClose}
           status={tecnoStatus}
           expirationDate={tecnoExpirationDate}
           issueDate={tecnoIssueDate}
@@ -223,14 +282,14 @@ const Dashboard: React.FC = () => {
       )}
       {showRoadKitModal && (
         <RoadKitDetailModal
-          onClose={() => setShowRoadKitModal(false)}
+          onClose={handleRoadKitModalClose}
           expirationDate={roadkitExpirationDate}
           status={roadkitStatus}
         />
       )}
       {showInsuranceModal && (
         <InsuranceDetailsModal
-          onClose={() => setShowInsuranceModal(false)}
+          onClose={handleInsuranceModalClose}
           status={insuranceStatus}
           issuanceDate={insuranceIssueDate}
           licensePlate={licensePlate}
