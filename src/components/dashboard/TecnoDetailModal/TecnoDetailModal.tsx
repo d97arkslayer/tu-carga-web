@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { COLORS } from "../../../utils/constants";
 import { FaTimes } from "react-icons/fa";
 import TecnoIcon from "../../../assets/icons/tecno.png";
+import { quoteTecnoService } from "../../../services/whatsappService"; // Importar el servicio de WhatsApp
 
 interface TecnoDetailModalProps {
   onClose: () => void;
@@ -41,11 +42,7 @@ const TecnoDetailModal: React.FC<TecnoDetailModalProps> = ({
   };
 
   const handleQuoteClick = (licensePlate: string) => {
-    const message = encodeURIComponent(
-      `Hola quiero contizar la revisión para el vehiculo de placa: ${licensePlate}`,
-    );
-    const whatsappUrl = `https://wa.me/573151957777?text=${message}`;
-    window.open(whatsappUrl, "_blank");
+    quoteTecnoService(licensePlate);
   };
 
   const toggleReminder = (key: keyof typeof reminders) => {

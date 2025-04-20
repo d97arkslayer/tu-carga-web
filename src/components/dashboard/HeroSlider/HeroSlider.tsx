@@ -1,5 +1,6 @@
 import React from "react";
 import { COLORS } from "../../../utils/constants";
+import { requestTowService } from "../../../services/whatsappService"; // Importar el nuevo servicio
 
 interface SlideProps {
   title: string;
@@ -11,18 +12,6 @@ interface HeroSliderProps {
   slide: SlideProps;
 }
 
-const handleWhatsAppClick = () => {
-  // Format phone number by removing spaces and special characters
-  const phoneNumber = "573151957777"; // +57 315 1957777 without spaces/special chars
-  const message = encodeURIComponent(
-    "Hola quiero solicitar un servicio de grúa",
-  );
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-
-  // Open WhatsApp in a new tab
-  window.open(whatsappUrl, "_blank");
-};
-
 const HeroSlider: React.FC<HeroSliderProps> = ({ slide }) => {
   return (
     <div className="-mx-4 sm:-mx-6 lg:-mx-8 relative">
@@ -32,7 +21,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ slide }) => {
             <h1 className="text-4xl font-bold mb-4">{slide.title}</h1>
             <p className="mb-6">{slide.description}</p>
             <button
-              onClick={handleWhatsAppClick}
+              onClick={requestTowService}
               className="py-3 px-6 rounded-full font-bold transition duration-300 hover:opacity-90"
               style={{ backgroundColor: COLORS.primary, color: COLORS.black }}
             >

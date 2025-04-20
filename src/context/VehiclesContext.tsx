@@ -13,6 +13,45 @@ interface VehicleItem {
   updatedAt: string;
 }
 
+interface OilChange {
+  maintenanceId: number;
+  currentMileage: number;
+  nextMileage: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface TireChange {
+  maintenanceId: number;
+  lastChangeDate: string;
+  nextChangeDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface MaintenanceItem {
+  id: number;
+  maintenanceId: number;
+  description: string;
+  price: number;
+  currentMileage: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Maintenance {
+  id: number;
+  vehicleId: number;
+  price: number;
+  type: string;
+  serviceCenter: string | null;
+  createdAt: string;
+  updatedAt: string;
+  oilChange: OilChange | null;
+  tireChange: TireChange | null;
+  maintenanceItems: MaintenanceItem[];
+}
+
 interface Vehicle {
   id: number;
   userId: number;
@@ -36,6 +75,7 @@ interface Vehicle {
   createdAt: string;
   updatedAt: string;
   vehicleItems: VehicleItem[];
+  maintenances: Maintenance[];
 }
 
 interface VehiclesContextType {
@@ -97,10 +137,48 @@ export const VehiclesProvider: React.FC<{ children: React.ReactNode }> = ({
                 createdAt: item.createdAt,
                 updatedAt: item.updatedAt,
               })),
+              maintenances: vehicle.maintenances.map((maintenance: any) => ({
+                id: maintenance.id,
+                vehicleId: maintenance.vehicleId,
+                price: maintenance.price,
+                type: maintenance.type,
+                serviceCenter: maintenance.serviceCenter,
+                createdAt: maintenance.createdAt,
+                updatedAt: maintenance.updatedAt,
+                oilChange: maintenance.oilChange
+                  ? {
+                      maintenanceId: maintenance.oilChange.maintenanceId,
+                      currentMileage: maintenance.oilChange.currentMileage,
+                      nextMileage: maintenance.oilChange.nextMileage,
+                      createdAt: maintenance.oilChange.createdAt,
+                      updatedAt: maintenance.oilChange.updatedAt,
+                    }
+                  : null,
+                tireChange: maintenance.tireChange
+                  ? {
+                      maintenanceId: maintenance.tireChange.maintenanceId,
+                      lastChangeDate: maintenance.tireChange.lastChangeDate,
+                      nextChangeDate: maintenance.tireChange.nextChangeDate,
+                      createdAt: maintenance.tireChange.createdAt,
+                      updatedAt: maintenance.tireChange.updatedAt,
+                    }
+                  : null,
+                maintenanceItems: maintenance.maintenanceItems.map(
+                  (item: any) => ({
+                    id: item.id,
+                    maintenanceId: item.maintenanceId,
+                    description: item.description,
+                    price: item.price,
+                    currentMileage: item.currentMileage,
+                    createdAt: item.createdAt,
+                    updatedAt: item.updatedAt,
+                  }),
+                ),
+              })),
             }),
           );
           setVehicles(mappedVehicles);
-          setSelectedVehicle(mappedVehicles[0] || null); // Set the first vehicle as default
+          setSelectedVehicle(mappedVehicles[0] || null);
         } else {
           setError("Failed to load vehicles");
         }

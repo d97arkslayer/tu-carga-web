@@ -3,6 +3,7 @@ import { COLORS } from "../../../utils/constants";
 import { FaTimes } from "react-icons/fa";
 import LicenceIcon from "../../../assets/icons/licence.png";
 import { UserItem } from "../../../context/UserItemsContext";
+import { quoteLicenseService } from "../../../services/whatsappService"; // Importar el servicio de WhatsApp
 
 interface LicenseDetailModalProps {
   onClose: () => void;
@@ -78,11 +79,10 @@ const LicenseDetailModal: React.FC<LicenseDetailModalProps> = ({
   // Add new handler for "Cotizar Licencia"
   const handleLicenseQuoteClick = () => {
     if (licenseItem) {
-      const message = encodeURIComponent(
-        `Hola, quiero cotizar la licencia con identificación ${licenseItem.itemIdentifier} y categoría ${licenseItem.licenseCategory}`,
+      quoteLicenseService(
+        licenseItem.itemIdentifier,
+        licenseItem.licenseCategory,
       );
-      const whatsappUrl = `https://wa.me/573151957777?text=${message}`;
-      window.open(whatsappUrl, "_blank");
     }
   };
 
