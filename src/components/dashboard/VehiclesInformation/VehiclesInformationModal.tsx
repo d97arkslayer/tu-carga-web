@@ -67,9 +67,9 @@ const VehiclesInformationModal: React.FC<VehicleInformationModalProps> = ({
             Selecciona un vehículo
           </label>
           <div className="flex items-center gap-4">
-            <div className="relative w-full">
+            <div className="relative w-1/2">
               <select
-                className="appearance-none border border-gray-300 px-4 py-2 rounded-md w-full pr-10"
+                className="border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring focus:border-lime-300 w-full pr-10 appearance-none"
                 value={selectedVehicle?.plate || ""}
                 onChange={handleVehicleChange}
               >
