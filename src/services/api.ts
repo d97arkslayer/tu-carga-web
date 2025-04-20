@@ -138,6 +138,48 @@ export const userAPI = {
   },
 };
 
+// Vehicle related functions
+export const vehicleAPI = {
+  createVehicle: async (vehicleData: {
+    plate: string;
+    userId?: number;
+    year: number;
+    make: string;
+    dniOwner: string;
+    dniOwnerType: string;
+    vehicleType: string;
+    line: string;
+    engineDisplacement: number;
+    serviceType: string;
+    color: string;
+    passengerCapacity: number;
+    fuelType: string;
+    registrationDate: string;
+    from: string;
+    engineId?: string;
+    VIN?: string;
+    chassisId?: string;
+  }) => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        throw new Error("Authentication token not found");
+      }
+
+      const response = await apiClient.post("/vehicles", vehicleData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || { message: "Error creating vehicle" };
+    }
+  },
+};
+
 // Maintenance related functions
 export const maintenanceAPI = {
   createMaintenance: async (maintenanceData: {

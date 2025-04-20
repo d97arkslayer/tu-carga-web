@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import { Vehicle } from "@/types";
-import { X, Trash2, ChevronDown, Plus } from "lucide-react"; // Usa lucide-react o cualquier librería de íconos
+import { X, Trash2, ChevronDown, Plus } from "lucide-react";
+import AddVehicleModal from "./AddVehicleModal";
+import { useVehiclesContext } from "../../../context/VehiclesContext";
 
 interface VehicleInformationModalProps {
   selectedVehicle: Vehicle | null;
   vehicles: Vehicle[] | null;
   setSelectedVehicleByPlate: (plate: string) => void;
   onClose: () => void;
+  onAddVehicle?: (
+    vehicleData: Omit<Vehicle, "id" | "userId" | "createdAt" | "updatedAt">,
+  ) => void;
 }
 
 const VehiclesInformationModal: React.FC<VehicleInformationModalProps> = ({
@@ -14,7 +19,14 @@ const VehiclesInformationModal: React.FC<VehicleInformationModalProps> = ({
   selectedVehicle,
   setSelectedVehicleByPlate,
   onClose,
+  onAddVehicle,
 }) => {
+  // Estado para controlar la visibilidad del modal de agregar vehículo
+  const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
+
+  // Obtenemos la función refreshVehicles directamente del contexto
+  const { refreshVehicles } = useVehiclesContext();
+
   // Handle change event for vehicle selection
   const handleVehicleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedVehicleByPlate(e.target.value);
@@ -43,7 +55,26 @@ const VehiclesInformationModal: React.FC<VehicleInformationModalProps> = ({
     return `${day} ${month} ${year}`;
   };
 
-  // @ts-ignore
+  // Manejador para el botón de agregar vehículo
+  const handleOpenAddVehicle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowAddVehicleModal(true);
+  };
+
+  // Manejador para guardar un nuevo vehículo
+  const handleSaveVehicle = async (
+    vehicleData: Omit<Vehicle, "id" | "userId" | "createdAt" | "updatedAt">,
+  ) => {
+    if (onAddVehicle) {
+      await onAddVehicle(vehicleData);
+    }
+
+    // Refrescar la lista de vehículos después de agregar uno nuevo
+    await refreshVehicles();
+
+    setShowAddVehicleModal(false);
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
@@ -126,10 +157,22 @@ const VehiclesInformationModal: React.FC<VehicleInformationModalProps> = ({
 
         {/* Botón agregar */}
         <div className="justify-left">
-          <button className="bg-lime-300 text-black px-6 py-2 rounded-full font-semibold text-sm hover:bg-lime-400 inline-flex items-center gap-2">
+          <button
+            className="bg-lime-300 text-black px-6 py-2 rounded-full font-semibold text-sm hover:bg-lime-400 inline-flex items-center gap-2"
+            onClick={handleOpenAddVehicle}
+          >
             <Plus className="w-4 h-4" /> Agregar vehículo
           </button>
         </div>
+
+        {/* Modal de agregar vehículo */}
+        {showAddVehicleModal && (
+          <AddVehicleModal
+            onClose={() => setShowAddVehicleModal(false)}
+            onSave={handleSaveVehicle}
+            onSuccess={refreshVehicles} // Asegurarnos de que también se propague la función de refresco
+          />
+        )}
       </div>
     </div>
   );
